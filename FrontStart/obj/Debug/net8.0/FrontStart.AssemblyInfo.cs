@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FrontStart")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+377211bb3e50130533b72c18fd486bddb66c7d9b")]
 [assembly: System.Reflection.AssemblyProductAttribute("FrontStart")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FrontStart")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
