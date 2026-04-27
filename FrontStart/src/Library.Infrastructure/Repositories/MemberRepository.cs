@@ -23,7 +23,7 @@ public class MemberRepository : IMemberRepository
         }
         catch (Exception ex)
         {
-            throw new RepositoryException("Failed to retrieve all members.", ex);
+            throw new RepositoryException("Cannot retrieve all members.", ex);
         }
     }
 
@@ -35,7 +35,7 @@ public class MemberRepository : IMemberRepository
         }
         catch (Exception ex)
         {
-            throw new RepositoryException($"Failed to retrieve member with ID {id}.", ex);
+            throw new RepositoryException($"Cannot retrieve member with ID {id}.", ex);
         }
     }
 
@@ -47,7 +47,7 @@ public class MemberRepository : IMemberRepository
         }
         catch (Exception ex)
         {
-            throw new RepositoryException($"Failed to retrieve member with email {email}.", ex);
+            throw new RepositoryException($"Cannot retrieve member with email {email}.", ex);
         }
     }
 
@@ -60,7 +60,7 @@ public class MemberRepository : IMemberRepository
         }
         catch (DbUpdateException ex)
         {
-            throw new RepositoryException("Failed to add new member.", ex);
+            throw new RepositoryException("Cannot add new member.", ex);
         }
         catch (Exception ex)
         {
@@ -77,11 +77,11 @@ public class MemberRepository : IMemberRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            throw new RepositoryException("Failed to update member due to concurrency conflict.", ex);
+            throw new RepositoryException("Cannot update member due to concurrency conflict.", ex);
         }
         catch (DbUpdateException ex)
         {
-            throw new RepositoryException("Failed to update member.", ex);
+            throw new RepositoryException("Cannot update member.", ex);
         }
         catch (Exception ex)
         {
@@ -103,7 +103,7 @@ public class MemberRepository : IMemberRepository
         }
         catch (DbUpdateException ex)
         {
-            throw new RepositoryException($"Failed to delete member with ID {id}.", ex);
+            throw new RepositoryException($"Cannot delete member with ID {id}.", ex);
         }
         catch (Exception ex)
         {
