@@ -13,4 +13,13 @@ public class BooksController : ControllerBase
     private readonly IBookService _service;
 
     public BooksController(IBookService service) => _service = service;
+    
+    // GET /api/books — Retrieves all books
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var books = await _service.GetAllBooksAsync();
+        return Ok(books);
+    }
+
 }
