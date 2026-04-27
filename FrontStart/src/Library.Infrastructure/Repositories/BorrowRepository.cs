@@ -42,7 +42,7 @@ public class BorrowRepository : IBorrowRepository
         }
         catch (Exception ex)
         {
-            throw new RepositoryException($"Failed to retrieve borrow history for member {memberId}.", ex);
+            throw new RepositoryException($"Cannot retrieve borrow history for member {memberId}.", ex);
         }
     }
 
@@ -59,7 +59,7 @@ public class BorrowRepository : IBorrowRepository
         catch (Exception ex)
         {
             throw new RepositoryException(
-                $"Failed to retrieve active borrow record for Book {bookId} and Member {memberId}.",
+                $"Cannot retrieve active borrow record for Book {bookId} and Member {memberId}.",
                 ex
             );
         }
@@ -74,7 +74,7 @@ public class BorrowRepository : IBorrowRepository
         }
         catch (DbUpdateException ex)
         {
-            throw new RepositoryException("Failed to add new borrow record.", ex);
+            throw new RepositoryException("Cannot add new borrow record.", ex);
         }
         catch (Exception ex)
         {
@@ -91,11 +91,11 @@ public class BorrowRepository : IBorrowRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            throw new RepositoryException("Failed to update borrow record due to concurrency conflict.", ex);
+            throw new RepositoryException("Cannot update borrow record due to concurrency conflict.", ex);
         }
         catch (DbUpdateException ex)
         {
-            throw new RepositoryException("Failed to update borrow record.", ex);
+            throw new RepositoryException("Cannot update borrow record.", ex);
         }
         catch (Exception ex)
         {
