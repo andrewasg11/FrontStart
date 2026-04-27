@@ -9,9 +9,8 @@ using Library.Api.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database Configuration ------
-// Configures EntityCoreFramework to use SQL Server w/ connection string from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Repositories ------
 builder.Services.AddScoped<IBookRepository, BookRepository>();
@@ -23,12 +22,16 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
 
-// Caching —----- 
+// Caching —-----
 // Enables In-Memory caching for application
 builder.Services.AddMemoryCache();
 
 // API Setup ------
 // Controller-based routing
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+});
 builder.Services.AddControllers();
 
 // launchSettings.json opens /swagger on launch,
