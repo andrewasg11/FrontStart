@@ -1,0 +1,17 @@
+# Build folders
+[Bb]in/
+[Oo]bj/
+
+# IDE and OS files
+.vs/
+.vscode/
+.DS_Store
+*.user
+
+# .NET specific
+project.lock.json
+*.props
+*.targets
+
+# Secrets/Local config
+appsettings.Development.json
