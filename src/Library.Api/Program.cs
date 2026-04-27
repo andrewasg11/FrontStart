@@ -1,41 +1,58 @@
+using Microsoft.EntityFrameworkCore;
+using Library.Application.Interfaces;
+using Library.Application.Services;
+using Library.Domain.Interfaces;
+using Library.Infrastructure.Data;
+using Library.Infrastructure.Repositories;
+using Library.Api.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Database Configuration ------
+// Configures EntityCoreFramework to use SQL Server w/ connection string from appsettings.json
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Repositories ------
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
+
+// Services ------
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IBorrowService, BorrowService>();
+
+// Caching —----- 
+// Enables In-Memory caching for application
+builder.Services.AddMemoryCache();
+
+// API Setup ------
+// Controller-based routing
+builder.Services.AddControllers();
+
+// launchSettings.json opens /swagger on launch,
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// HTTP Pipeline Configuration ------
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
 }
 
-app.UseHttpsRedirection();
+// Global Error Handling ------
+app.UseMiddleware<ExceptionMiddleware>();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
+// Routes incoming requests to controller actions
+app.MapControllers();
+// Starts web application
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

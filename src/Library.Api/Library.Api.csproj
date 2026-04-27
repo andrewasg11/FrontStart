@@ -1,13 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+    <!-- Core API Documentation & Tooling (Swagger) -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.23" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Project Dependencies: Links api layer to application logic -->
+    <ProjectReference Include="..\Library.Application\Library.Application.csproj" />
+    <!-- Project Dependencies: Links api layer to Data/Infrastructure layer -->
+    <ProjectReference Include="..\Library.Infrastructure\Library.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

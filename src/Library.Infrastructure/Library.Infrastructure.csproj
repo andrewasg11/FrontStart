@@ -1,7 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <ItemGroup>
+    <!-- Dependency on application/domain layers for logic and entities-->
+    <ProjectReference Include="..\Library.Application\Library.Application.csproj" />
+    <ProjectReference Include="..\Library.Domain\Library.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Database Support: Entity Framework Core tools for Migrations -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- SQL Server for Entity Framework Core -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
