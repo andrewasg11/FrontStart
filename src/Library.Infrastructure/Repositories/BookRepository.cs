@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
-// EF Core implementation of book repository, handling persistence, and retrieval for books and their borrow records
 public class BookRepository : IBookRepository
 {
     private readonly AppDbContext _context;
@@ -15,39 +14,112 @@ public class BookRepository : IBookRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync() =>
-        await _context.Books.ToListAsync();
+    public async Task<IEnumerable<Book>> GetAllAsync()
+    {
+        try
+        {
+            return await _context.Books.ToListAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while retrieving all books.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while retrieving all books.", ex);
+        }
+    }
 
-    // FIX: parameter was int — changed to Guid to match Book.Id and IBookRepository
-    public async Task<Book?> GetByIdAsync(Guid id) =>
-        await _context.Books.FindAsync(id);
+    public async Task<Book?> GetByIdAsync(Guid id)
+    {
+        try
+        {
+            return await _context.Books.FindAsync(id);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException($"Database error while retrieving book with ID {id}.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"Unexpected error while retrieving book with ID {id}.", ex);
+        }
+    }
 
     public async Task AddAsync(Book book)
     {
-        await _context.Books.AddAsync(book);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.Books.AddAsync(book);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while adding a new book.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while adding a new book.", ex);
+        }
     }
 
     public async Task UpdateAsync(Book book)
     {
-        _context.Books.Update(book);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Books.Update(book);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new RepositoryException("Concurrency error while updating a book.", ex);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while updating a book.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while updating a book.", ex);
+        }
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var book = await _context.Books.FindAsync(id);
-        if (book != null)
+        try
         {
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
+            var book = await _context.Books.FindAsync(id);
+
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException($"Database error while deleting book with ID {id}.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"Unexpected error while deleting book with ID {id}.", ex);
         }
     }
 
-    // Creates new transaction entry in the BorrowRecords Table
     public async Task CreateBorrowRecordAsync(BorrowRecord record)
     {
-        await _context.BorrowRecords.AddAsync(record);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.BorrowRecords.AddAsync(record);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while creating a borrow record.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while creating a borrow record.", ex);
+        }
     }
 }

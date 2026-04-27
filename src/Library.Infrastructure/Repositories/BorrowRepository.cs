@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
-// EF Core implementation for managing transaction data, active loans, and member history
 public class BorrowRepository : IBorrowRepository
 {
     private readonly AppDbContext _context;
@@ -15,38 +14,102 @@ public class BorrowRepository : IBorrowRepository
         _context = context;
     }
 
-    // Retrieves all records, including related Book and Member data for mapping
-    public async Task<IEnumerable<BorrowRecord>> GetAllAsync() =>
-        await _context.BorrowRecords
-            .Include(r => r.Book)
-            .Include(r => r.Member)
-            .ToListAsync();
+    public async Task<IEnumerable<BorrowRecord>> GetAllAsync()
+    {
+        try
+        {
+            return await _context.BorrowRecords
+                .Include(r => r.Book)
+                .Include(r => r.Member)
+                .ToListAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while retrieving all borrow records.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while retrieving all borrow records.", ex);
+        }
+    }
 
-    // Retrieves borrowing history for a specific member, including related entity data
-    public async Task<IEnumerable<BorrowRecord>> GetByMemberIdAsync(Guid memberId) =>
-        await _context.BorrowRecords
-            .Include(r => r.Book)
-            .Include(r => r.Member)
-            .Where(r => r.MemberId == memberId)
-            .ToListAsync();
+    public async Task<IEnumerable<BorrowRecord>> GetByMemberIdAsync(Guid memberId)
+    {
+        try
+        {
+            return await _context.BorrowRecords
+                .Include(r => r.Book)
+                .Include(r => r.Member)
+                .Where(r => r.MemberId == memberId)
+                .ToListAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException($"Database error while retrieving borrow history for member {memberId}.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"Unexpected error while retrieving borrow history for member {memberId}.", ex);
+        }
+    }
 
-    // Locates an active "Borrowed" record to process a book return
-    public async Task<BorrowRecord?> GetActiveBorrowAsync(Guid bookId, Guid memberId) =>
-        await _context.BorrowRecords
-            .FirstOrDefaultAsync(r =>
-                r.BookId == memberId &&
-                r.MemberId == memberId &&
-                r.Status == "Borrowed");
+    public async Task<BorrowRecord?> GetActiveBorrowAsync(Guid bookId, Guid memberId)
+    {
+        try
+        {
+            return await _context.BorrowRecords
+                .FirstOrDefaultAsync(r =>
+                    r.BookId == bookId &&
+                    r.MemberId == memberId &&
+                    r.Status == "Borrowed");
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException(
+                $"Database error while retrieving active borrow record for book {bookId} and member {memberId}.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(
+                $"Unexpected error while retrieving active borrow record for book {bookId} and member {memberId}.", ex);
+        }
+    }
 
     public async Task AddAsync(BorrowRecord record)
     {
-        await _context.BorrowRecords.AddAsync(record);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.BorrowRecords.AddAsync(record);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while adding a borrow record.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while adding a borrow record.", ex);
+        }
     }
 
     public async Task UpdateAsync(BorrowRecord record)
     {
-        _context.BorrowRecords.Update(record);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.BorrowRecords.Update(record);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new RepositoryException("Concurrency error while updating a borrow record.", ex);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new RepositoryException("Database error while updating a borrow record.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Unexpected error while updating a borrow record.", ex);
+        }
     }
 }
