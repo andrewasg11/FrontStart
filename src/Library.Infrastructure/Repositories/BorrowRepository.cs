@@ -34,7 +34,7 @@ public class BorrowRepository : IBorrowRepository
     public async Task<BorrowRecord?> GetActiveBorrowAsync(Guid bookId, Guid memberId) =>
         await _context.BorrowRecords
             .FirstOrDefaultAsync(r =>
-                r.BookId == memberId &&
+                r.BookId == bookId &&
                 r.MemberId == memberId &&
                 r.Status == "Borrowed");
 
